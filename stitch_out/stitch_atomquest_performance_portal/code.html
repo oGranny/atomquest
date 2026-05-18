@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AtomQuest - Goal Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#705e00",
+                        "tertiary": "#585f6c",
+                        "surface-tint": "#705d00",
+                        "outline": "#7e775f",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-bright": "#f8f9fb",
+                        "on-tertiary-container": "#585f6d",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#dce2f3",
+                        "on-tertiary-fixed-variant": "#404754",
+                        "secondary-fixed": "#dce2f7",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#d9dff5",
+                        "background": "#f8f9fb",
+                        "surface-container-high": "#e7e8ea",
+                        "inverse-primary": "#e9c400",
+                        "surface-variant": "#e1e2e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#141b2b",
+                        "secondary-fixed-dim": "#c0c6db",
+                        "surface-container": "#edeef0",
+                        "on-surface-variant": "#4d4732",
+                        "tertiary-container": "#d3daea",
+                        "on-background": "#191c1e",
+                        "surface-dim": "#d9dadc",
+                        "surface": "#f8f9fb",
+                        "on-primary-fixed": "#221b00",
+                        "on-surface": "#191c1e",
+                        "secondary": "#575e70",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#404758",
+                        "primary-container": "#ffd700",
+                        "primary": "#705d00",
+                        "outline-variant": "#d0c6ab",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary-fixed-dim": "#e9c400",
+                        "tertiary-fixed-dim": "#c0c7d6",
+                        "primary-fixed": "#ffe16d",
+                        "on-tertiary-fixed": "#151c27",
+                        "surface-container-low": "#f3f4f6",
+                        "on-primary-fixed-variant": "#544600",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#5c6274",
+                        "inverse-surface": "#2e3132",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "margin-desktop": "48px",
+                        "xl": "40px",
+                        "gutter": "24px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-badge {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden">
+<!-- SideNavBar Component (Authority: JSON & Style Guidance) -->
+<aside class="hidden md:flex flex-col h-full py-lg px-md gap-sm bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant w-64 shrink-0">
+<div class="mb-xl px-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">AtomQuest</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Industrial Goal Portal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-sm">
+<!-- Active Navigation (Goal Builder) -->
+<a class="bg-primary-container text-on-primary-container font-bold rounded-lg px-md py-sm flex items-center gap-md active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+<span class="font-label-md text-label-md">Goal Builder</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm flex items-center gap-md active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Success Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm flex items-center gap-md active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group_work">group_work</span>
+<span class="font-label-md text-label-md">Team Review</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm flex items-center gap-md active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-md text-label-md">Governance</span>
+</a>
+</nav>
+<div class="border-t border-outline-variant pt-lg mt-auto flex flex-col gap-sm">
+<button class="bg-primary text-on-secondary font-bold rounded-lg py-md mb-md active:scale-[0.98] transition-all">New Goal</button>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm flex items-center gap-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm flex items-center gap-md" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col overflow-hidden relative">
+<!-- TopAppBar Component (Authority: JSON) -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-20 bg-surface-container dark:bg-surface-container-high shadow-[0px_4px_20px_rgba(17,24,39,0.05)] z-20 shrink-0">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Goal Builder</span>
+<nav class="hidden md:flex gap-lg">
+<a class="text-secondary hover:text-primary active:scale-95 duration-150 font-label-md text-label-md" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary pb-1 active:scale-95 duration-150 font-label-md text-label-md" href="#">Goals</a>
+<a class="text-secondary hover:text-primary active:scale-95 duration-150 font-label-md text-label-md" href="#">Review</a>
+<a class="text-secondary hover:text-primary active:scale-95 duration-150 font-label-md text-label-md" href="#">Admin</a>
+</nav>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative hidden sm:block">
+<input class="bg-surface-container-low rounded-full px-md py-2 border-none text-body-sm w-64 focus:ring-2 focus:ring-primary-container" placeholder="Search parameters..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-secondary" data-icon="search">search</span>
+</div>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:bg-surface-container-high p-2 rounded-full" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:bg-surface-container-high p-2 rounded-full" data-icon="settings">settings</span>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest border border-outline-variant">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a modern employee in a bright corporate office setting. The lighting is soft and natural, emphasizing a high-energy yet professional mood. The background features blurred glass partitions and industrial architectural details consistent with a sleek, minimalist workplace. The color palette is clean with neutral tones and soft primary accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJRl0Vbfalp00r25PKiVLh9-0DwDA9y-UExwxsyzczJ6bFyAftUBFHHVHRHxVZO1eJ6qOe50Ss8X7dA1hou9ws4LSg10Kf1cG97VuYWULRlwMDfE5alnWeLdOPfyQu547PC3brCHCoW6KMpN0efayLxCN8CvMECzQAjsIITmlzB39iclPA_b1YSiOLFt9HxH0q2RtoCdVrGlpiOyfpDf3UoqWCAp-VrG5PN1LSUs4dUTKVyg5MqN6JtA1GuSoasCxsqm6EBXWAJF1l"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area: Split-Screen Layout -->
+<main class="flex-1 flex overflow-hidden bg-surface-container-low">
+<!-- Left Panel: Goal List -->
+<section class="w-1/3 min-w-[320px] max-w-[480px] border-r border-outline-variant flex flex-col bg-surface-container-lowest">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface">
+<h2 class="font-headline-md text-headline-md text-on-surface">Your Slots</h2>
+<span class="glass-badge border border-primary px-sm py-1 rounded-full text-primary font-label-sm text-label-sm">3/8 Filled</span>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-sm">
+<!-- Filled Goal 1 -->
+<div class="bg-white p-lg rounded-xl border-l-4 border-primary shadow-[0px_4px_20px_rgba(17,24,39,0.05)] cursor-pointer hover:shadow-[0px_10px_30px_rgba(17,24,39,0.08)] transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-primary">SLOT 01</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="verified">verified</span>
+</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-1">Increase Component Efficiency</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Optimize assembly line through-put by 15%.</p>
+</div>
+<!-- Filled Goal 2 (Selected) -->
+<div class="bg-surface-container-high p-lg rounded-xl border-l-4 border-secondary shadow-[0px_4px_20px_rgba(17,24,39,0.05)] cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-secondary">SLOT 02</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="edit">edit</span>
+</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-1">Reduce Material Waste</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Targeting less than 2% scrap rate per cycle.</p>
+</div>
+<!-- Filled Goal 3 -->
+<div class="bg-white p-lg rounded-xl border-l-4 border-outline shadow-[0px_4px_20px_rgba(17,24,39,0.05)] cursor-pointer hover:shadow-[0px_10px_30px_rgba(17,24,39,0.08)] transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-outline">SLOT 03</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="pending">pending</span>
+</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-1">Staff Training Program</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Certify 12 technicians on new safety protocols.</p>
+</div>
+<!-- Empty Slots -->
+<div class="border-2 border-dashed border-outline-variant p-lg rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">SLOT 04 (Empty)</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant p-lg rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">SLOT 05 (Empty)</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant p-lg rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">SLOT 06 (Empty)</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant p-lg rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">SLOT 07 (Empty)</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant p-lg rounded-xl flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="font-label-md text-label-md">SLOT 08 (Empty)</span>
+</div>
+</div>
+</section>
+<!-- Right Panel: Detailed Editor -->
+<section class="flex-1 flex flex-col p-margin-desktop overflow-y-auto">
+<div class="max-w-[800px] w-full mx-auto space-y-lg">
+<!-- Editor Header -->
+<div class="flex justify-between items-end border-b border-outline-variant pb-md mb-xl">
+<div>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">Editing Goal 02</span>
+<h2 class="font-headline-xl text-[40px] text-on-surface leading-tight mt-2">Reduce Material Waste</h2>
+</div>
+<div class="flex gap-sm pb-1">
+<button class="bg-secondary text-white px-lg py-sm rounded-lg font-bold hover:opacity-90 transition-all">Save Draft</button>
+<button class="bg-primary text-on-secondary px-lg py-sm rounded-lg font-bold hover:opacity-90 transition-all">Submit</button>
+</div>
+</div>
+<!-- Input Fields Cluster -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Goal Title</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg p-md focus:bg-white focus:ring-2 focus:ring-primary-container text-body-md transition-all" type="text" value="Reduce Material Waste"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Primary Metric</label>
+<select class="w-full bg-surface-container-low border-none rounded-lg p-md focus:bg-white focus:ring-2 focus:ring-primary-container text-body-md appearance-none">
+<option>Waste Percentage (%)</option>
+<option>Revenue Loss ($)</option>
+<option>Recycling Ratio</option>
+</select>
+</div>
+<div class="space-y-sm col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Description</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-lg p-md focus:bg-white focus:ring-2 focus:ring-primary-container text-body-md transition-all" rows="4">Implement new sensor technology on the assembly floor to monitor scrap in real-time. Target is to bring the current 4.5% waste down to under 2% by Q4.</textarea>
+</div>
+</div>
+<!-- Target & Weightage Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Weightage Stepper Card -->
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-center mb-md">
+<h4 class="font-headline-md text-headline-md text-on-surface">Weightage</h4>
+<span class="material-symbols-outlined text-primary" data-icon="scale">scale</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-sm">
+<button class="w-12 h-12 flex items-center justify-center bg-secondary text-white rounded-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+<span class="font-headline-xl text-headline-xl text-secondary">25%</span>
+<button class="w-12 h-12 flex items-center justify-center bg-secondary text-white rounded-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-md">This goal accounts for 1/4th of your total performance index.</p>
+</div>
+<!-- Target Value Card -->
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-center mb-md">
+<h4 class="font-headline-md text-headline-md text-on-surface">Target Value</h4>
+<span class="material-symbols-outlined text-secondary" data-icon="ads_click">ads_click</span>
+</div>
+<div class="flex items-end gap-sm">
+<span class="font-headline-xl text-headline-xl text-on-surface">2.0</span>
+<span class="font-headline-md text-headline-md text-secondary mb-2">%</span>
+</div>
+<div class="mt-md">
+<input class="w-full accent-primary" max="10" min="0" step="0.1" type="range" value="2"/>
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant mt-2">
+<span>0.0% (Perfect)</span>
+<span>10.0% (Critical)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Context Card (Bento Style) -->
+<div class="bg-inverse-surface text-inverse-on-surface p-lg rounded-xl relative overflow-hidden h-48">
+<div class="relative z-10 h-full flex flex-col justify-between">
+<h4 class="font-headline-md text-headline-md">Historical Context</h4>
+<p class="font-body-md text-body-md opacity-80 max-w-[400px]">Last year, your department averaged 3.8% waste. Reducing this to 2.0% would represent a record efficiency for the plant.</p>
+<div class="flex gap-md mt-md">
+<span class="glass-badge px-md py-1 rounded-full border border-white/20 text-label-sm">High Priority</span>
+<span class="glass-badge px-md py-1 rounded-full border border-white/20 text-label-sm">Tech Enabled</span>
+</div>
+</div>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-10">
+<span class="material-symbols-outlined text-[160px]" data-icon="precision_manufacturing">precision_manufacturing</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer: Weightage Meter -->
+<footer class="h-20 bg-surface-container dark:bg-surface-container-high flex items-center px-margin-desktop gap-xl shrink-0 z-30">
+<div class="flex items-center gap-md shrink-0">
+<span class="material-symbols-outlined text-secondary" data-icon="balance">balance</span>
+<span class="font-label-md text-label-md text-on-surface">Total Weightage</span>
+</div>
+<div class="flex-1 h-3 bg-surface-container-highest rounded-full relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full bg-[#FFBF00] w-[85%] rounded-full shadow-[0_0_10px_rgba(255,191,0,0.3)]"></div>
+</div>
+<div class="flex items-center gap-lg shrink-0">
+<div class="text-right">
+<div class="font-headline-md text-[20px] text-on-surface">85% <span class="text-body-sm font-body-sm opacity-60">/ 100%</span></div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">You're 15% away from your weightage goal!</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-lg py-2 rounded-lg font-bold shadow-sm active:scale-95 transition-all">Review Distribution</button>
+</div>
+</footer>
+<!-- BottomNavBar Component (Authority: JSON - Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface dark:bg-inverse-surface shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="ads_click">ads_click</span>
+<span class="font-label-sm text-label-sm">Goals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+<span class="font-label-sm text-label-sm">Progress</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="supervisor_account">supervisor_account</span>
+<span class="font-label-sm text-label-sm">Team</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-label-sm text-label-sm">Admin</span>
+</a>
+</nav>
+</div>
+</body></html>

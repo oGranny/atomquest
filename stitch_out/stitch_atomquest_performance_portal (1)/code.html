@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AtomQuest 1.0 - Success Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#705e00",
+                      "tertiary": "#585f6c",
+                      "surface-tint": "#705d00",
+                      "outline": "#7e775f",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#f0f1f3",
+                      "surface-bright": "#f8f9fb",
+                      "on-tertiary-container": "#585f6d",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#dce2f3",
+                      "on-tertiary-fixed-variant": "#404754",
+                      "secondary-fixed": "#dce2f7",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#d9dff5",
+                      "background": "#f8f9fb",
+                      "surface-container-high": "#e7e8ea",
+                      "inverse-primary": "#e9c400",
+                      "surface-variant": "#e1e2e4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#141b2b",
+                      "secondary-fixed-dim": "#c0c6db",
+                      "surface-container": "#edeef0",
+                      "on-surface-variant": "#4d4732",
+                      "tertiary-container": "#d3daea",
+                      "on-background": "#191c1e",
+                      "surface-dim": "#d9dadc",
+                      "surface": "#f8f9fb",
+                      "on-primary-fixed": "#221b00",
+                      "on-surface": "#191c1e",
+                      "secondary": "#575e70",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#404758",
+                      "primary-container": "#ffd700",
+                      "primary": "#705d00",
+                      "outline-variant": "#d0c6ab",
+                      "surface-container-highest": "#e1e2e4",
+                      "primary-fixed-dim": "#e9c400",
+                      "tertiary-fixed-dim": "#c0c7d6",
+                      "primary-fixed": "#ffe16d",
+                      "on-tertiary-fixed": "#151c27",
+                      "surface-container-low": "#f3f4f6",
+                      "on-primary-fixed-variant": "#544600",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#5c6274",
+                      "inverse-surface": "#2e3132",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "margin-desktop": "48px",
+                      "xl": "40px",
+                      "gutter": "24px",
+                      "sm": "8px",
+                      "margin-mobile": "16px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Montserrat"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-xl": ["Montserrat"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Montserrat"],
+                      "headline-lg-mobile": ["Montserrat"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .glass-badge {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.6);
+        }
+        .circular-progress {
+            background: radial-gradient(closest-side, white 79%, transparent 80% 100%),
+                        conic-gradient(#ffd700 var(--progress), #edeef0 0);
+        }
+        .sparkline {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 32px;
+        }
+        .spark-bar {
+            width: 4px;
+            background-color: #111827;
+            border-radius: 1px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden md:flex flex-col h-full py-lg px-md gap-sm bg-surface-container-low dark:bg-surface-container-lowest w-64 border-r border-outline-variant fixed left-0 top-0 z-40">
+<div class="flex items-center gap-md px-sm mb-lg">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">rocket_launch</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg-mobile font-bold text-on-surface">AtomQuest</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Industrial Goal Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-base">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+<span class="font-label-md text-label-md">Goal Builder</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container font-bold rounded-lg transition-all active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Success Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group_work">group_work</span>
+<span class="font-label-md text-label-md">Team Review</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-md text-label-md">Governance</span>
+</a>
+</nav>
+<div class="pt-lg border-t border-outline-variant space-y-base">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-64 pb-24 md:pb-0 min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface shadow-[0px_4px_20px_rgba(17,24,39,0.05)] sticky top-0 z-30">
+<div class="flex justify-between items-center w-full px-4 md:px-margin-desktop h-20 max-w-[1280px] mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface">Success Dashboard</span>
+</div>
+<div class="flex items-center gap-lg">
+<div class="hidden md:flex items-center gap-lg mr-md">
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary active:scale-95 duration-150" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary pb-1 active:scale-95 duration-150" href="#">Goals</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary active:scale-95 duration-150" href="#">Review</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary active:scale-95 duration-150" href="#">Admin</a>
+</div>
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDE8O0B4zjpNE3BZJ9--KHwF38jXLjai2xg21IUdlJOhzRslfg3do7pIg274W7q8gI9UYBP2kWrWB3piyAxGyusHz1ZgFL50IEUwQhgfljtCTH2kwdR_10ZxZqTwu6b6q_l0Jh_0qBQlFjAgiK6kJGY7BaivBr5b9U-VSckY2OuT1YVmMAcFiX7zrZpa8l0B1orl7yPeNnftEkCK42pFsyZVPGEDeLNUxIKHAf3wF_uoPKDJWb3KcRUzsU3D_JbQTVEJbHgrXWm61"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<section class="max-w-[1280px] mx-auto w-full px-4 md:px-margin-desktop py-lg">
+<!-- Hero Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-xl">
+<div class="md:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-outline-variant flex flex-col justify-between overflow-hidden relative">
+<div class="z-10">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-sm">Quarterly Achievement</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">You've reached 84% of your efficiency targets this quarter. Keep pushing the technical boundaries.</p>
+</div>
+<div class="flex items-end gap-md mt-xl z-10">
+<button class="bg-primary-container text-on-primary-container font-bold px-lg py-sm rounded-lg hover:brightness-95 transition-all">Download Report</button>
+<button class="border border-outline px-lg py-sm rounded-lg font-bold hover:bg-surface-container-high transition-all">View Details</button>
+</div>
+<!-- Decorative abstract graphic -->
+<div class="absolute right-0 bottom-0 top-0 w-1/3 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[160px]" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+</div>
+<div class="md:col-span-4 bg-on-secondary-fixed text-on-secondary p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] flex flex-col justify-center items-center text-center">
+<div class="text-[56px] font-headline-xl text-primary-fixed mb-xs">12</div>
+<p class="font-label-md text-label-md uppercase tracking-widest text-secondary-fixed-dim">Active Initiatives</p>
+</div>
+</div>
+<!-- Section Header -->
+<div class="flex items-center justify-between mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface">Goal Progress Cards</h3>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm bg-surface-container text-on-surface rounded-lg font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+</div>
+</div>
+<!-- Goal Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-surface-container-high hover:shadow-[0px_10px_30px_rgba(17,24,39,0.08)] transition-all">
+<div class="flex justify-between items-start mb-lg">
+<h4 class="font-headline-md text-headline-md-mobile text-on-surface max-w-[70%]">Optimize BLDC Motor Efficiency</h4>
+<div class="glass-badge px-sm py-xs rounded border border-[#4CAF50] text-[#2E7D32] font-label-sm text-label-sm">
+                            Approved
+                        </div>
+</div>
+<div class="flex items-center justify-between mb-lg">
+<div class="circular-progress w-24 h-24 rounded-full flex items-center justify-center relative" style="--progress: 75%;">
+<span class="font-headline-md text-headline-md text-on-surface">75%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Quarterly Trend</span>
+<div class="sparkline">
+<div class="spark-bar h-[40%]" style="height: 40%;"></div>
+<div class="spark-bar h-[60%]" style="height: 60%;"></div>
+<div class="spark-bar h-[55%]" style="height: 55%;"></div>
+<div class="spark-bar h-[75%]" style="height: 75%;"></div>
+</div>
+</div>
+</div>
+<div class="pt-md border-t border-surface-container flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Due: Q4 2024</span>
+<span class="material-symbols-outlined text-secondary hover:text-primary cursor-pointer">arrow_forward</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-surface-container-high hover:shadow-[0px_10px_30px_rgba(17,24,39,0.08)] transition-all">
+<div class="flex justify-between items-start mb-lg">
+<h4 class="font-headline-md text-headline-md-mobile text-on-surface max-w-[70%]">Zero-Defect Line Integration</h4>
+<div class="glass-badge px-sm py-xs rounded border-[#2196F3] text-[#1976D2] font-label-sm text-label-sm">
+                            Submitted
+                        </div>
+</div>
+<div class="flex items-center justify-between mb-lg">
+<div class="circular-progress w-24 h-24 rounded-full flex items-center justify-center relative" style="--progress: 32%;">
+<span class="font-headline-md text-headline-md text-on-surface">32%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Quarterly Trend</span>
+<div class="sparkline">
+<div class="spark-bar h-[10%]" style="height: 10%;"></div>
+<div class="spark-bar h-[15%]" style="height: 15%;"></div>
+<div class="spark-bar h-[25%]" style="height: 25%;"></div>
+<div class="spark-bar h-[32%]" style="height: 32%;"></div>
+</div>
+</div>
+</div>
+<div class="pt-md border-t border-surface-container flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Due: Q1 2025</span>
+<span class="material-symbols-outlined text-secondary hover:text-primary cursor-pointer">arrow_forward</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-surface-container-high hover:shadow-[0px_10px_30px_rgba(17,24,39,0.08)] transition-all">
+<div class="flex justify-between items-start mb-lg">
+<h4 class="font-headline-md text-headline-md-mobile text-on-surface max-w-[70%]">Automated Testing Framework</h4>
+<div class="glass-badge px-sm py-xs rounded border border-[#4CAF50] text-[#2E7D32] font-label-sm text-label-sm">
+                            Approved
+                        </div>
+</div>
+<div class="flex items-center justify-between mb-lg">
+<div class="circular-progress w-24 h-24 rounded-full flex items-center justify-center relative" style="--progress: 92%;">
+<span class="font-headline-md text-headline-md text-on-surface">92%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Quarterly Trend</span>
+<div class="sparkline">
+<div class="spark-bar h-[80%]" style="height: 80%;"></div>
+<div class="spark-bar h-[85%]" style="height: 85%;"></div>
+<div class="spark-bar h-[90%]" style="height: 90%;"></div>
+<div class="spark-bar h-[92%]" style="height: 92%;"></div>
+</div>
+</div>
+</div>
+<div class="pt-md border-t border-surface-container flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Due: Q4 2024</span>
+<span class="material-symbols-outlined text-secondary hover:text-primary cursor-pointer">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table-Card -->
+<div class="mt-xl bg-white rounded-xl shadow-[0px_4px_20px_rgba(17,24,39,0.05)] border border-surface-container-high overflow-hidden">
+<div class="px-lg py-md border-b border-surface-container flex items-center justify-between">
+<h5 class="font-headline-md text-headline-md text-on-surface">Recent Submissions</h5>
+<button class="text-primary font-label-md text-label-md">View All History</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<tr>
+<th class="px-lg py-md">Metric Name</th>
+<th class="px-lg py-md">Date</th>
+<th class="px-lg py-md">Status</th>
+<th class="px-lg py-md text-right">Value</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md text-on-surface">Energy Yield Index</td>
+<td class="px-lg py-md font-body-sm text-on-surface-variant">Oct 24, 2023</td>
+<td class="px-lg py-md">
+<span class="glass-badge px-sm py-xs rounded border border-[#FFC107] text-[#856404] font-label-sm text-label-sm">Pending</span>
+</td>
+<td class="px-lg py-md text-right font-bold text-on-surface">0.98 kWh</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md text-on-surface">Thermal Stress Test</td>
+<td class="px-lg py-md font-body-sm text-on-surface-variant">Oct 22, 2023</td>
+<td class="px-lg py-md">
+<span class="glass-badge px-sm py-xs rounded border border-[#4CAF50] text-[#2E7D32] font-label-sm text-label-sm">Verified</span>
+</td>
+<td class="px-lg py-md text-right font-bold text-on-surface">Pass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface dark:bg-inverse-surface shadow-lg rounded-t-xl border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined" data-icon="ads_click">ads_click</span>
+<span class="font-label-sm text-label-sm">Goals</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+<span class="font-label-sm text-label-sm">Progress</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined" data-icon="supervisor_account">supervisor_account</span>
+<span class="font-label-sm text-label-sm">Team</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-label-sm text-label-sm">Admin</span>
+</a>
+</nav>
+</body></html>

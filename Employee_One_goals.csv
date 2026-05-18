@@ -1,0 +1,6 @@
+Employee,Email,ThrustArea,Goal,Target,UoM,Achievement,Status,Comments
+Employee One,emp1@atomberg.com,222,2222,0,TIMELINE,19,COMPLETED,asasa
+Employee One,emp1@atomberg.com,2323,2323,0,ZERO_BASED,0,N/A,
+Employee One,emp1@atomberg.com,2323,2323,0,NUMERIC,9.99,ON_TRACK,aa
+Employee One,emp1@atomberg.com,33,33,333,NUMERIC,399.98,COMPLETED,aa
+Employee One,emp1@atomberg.com,Sales,33,200,PERCENTAGE,20000,ON_TRACK,aa
