@@ -9,7 +9,9 @@ import authRoutes from './routes/authRoutes';
 import goalRoutes from './routes/goalRoutes';
 import checkInRoutes from './routes/checkInRoutes';
 import reportRoutes from './routes/reportRoutes';
+import analyticsRoutes from './routes/analyticsRoutes';
 import { initReminderJob } from './jobs/reminderJob';
+import { initEscalationJob } from './jobs/escalationJob';
 
 dotenv.config();
 
@@ -29,11 +31,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/checkins', checkInRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.use(errorHandler);
 
 // Initialize background jobs
 initReminderJob();
+initEscalationJob();
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

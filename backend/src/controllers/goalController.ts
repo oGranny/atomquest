@@ -13,8 +13,11 @@ export const createGoalSheet = async (req: Request, res: Response, next: NextFun
       where: { userId, cycleYear, status: { not: GoalSheetStatus.RETURNED } }
     });
 
-    if (existingSheet && existingSheet.status !== GoalSheetStatus.DRAFT) {
-      return res.status(400).json({ message: 'Active goal sheet already exists for this cycle' });
+    if (existingSheet) {
+        if (existingSheet.status === GoalSheetStatus.DRAFT) {
+            return res.json(existingSheet);
+        }
+        return res.status(400).json({ message: 'Active goal sheet already exists for this cycle' });
     }
 
     const goalSheet = await prisma.goalSheet.create({
@@ -104,9 +107,9 @@ export const submitGoalSheet = async (req: Request, res: Response, next: NextFun
       data: { status: GoalSheetStatus.SUBMITTED }
     });
 
-    // Trigger Email to Manager
+    // Trigger Email to Manager and Employee
     if (goalSheet.user.manager?.email) {
-        sendSubmissionEmail(goalSheet.user.manager.email, goalSheet.user.name, id).catch(console.error);
+        sendSubmissionEmail(goalSheet.user.manager.email, goalSheet.user.email, goalSheet.user.name).catch(console.error);
     }
 
     res.json(updatedSheet);
@@ -186,7 +189,10 @@ export const getPendingApprovals = async (req: Request, res: Response, next: Nex
     }
 
     const pendingSheets = await prisma.goalSheet.findMany({
-      where,
+      where: {
+          ...where,
+          goals: { some: {} }
+      },
       include: {
         user: true,
         goals: {
@@ -204,6 +210,7 @@ export const getPendingApprovals = async (req: Request, res: Response, next: Nex
 export const approveGoalSheet = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id as string;
+    const managerEmail = (req as any).user.email;
     const userId = (req as any).user.userId;
 
     const goalSheet = await prisma.goalSheet.findUnique({
@@ -218,9 +225,9 @@ export const approveGoalSheet = async (req: Request, res: Response, next: NextFu
 
     await logAudit(userId, 'APPROVE', id, 'GoalSheet', 'Manager/Admin approved goal sheet');
 
-    // Trigger Email to Employee
+    // Trigger Email to Employee and Manager
     if (goalSheet?.user.email) {
-        sendApprovalEmail(goalSheet.user.email, goalSheet.user.name).catch(console.error);
+        sendApprovalEmail(goalSheet.user.email, managerEmail || 'manager@atomberg.com', goalSheet.user.name).catch(console.error);
     }
 
     res.json(updatedSheet);
@@ -232,6 +239,7 @@ export const approveGoalSheet = async (req: Request, res: Response, next: NextFu
 export const returnGoalSheet = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id as string;
+    const managerEmail = (req as any).user.email;
     const { revisionComment } = req.body;
     
     const goalSheet = await prisma.goalSheet.findUnique({
@@ -247,9 +255,9 @@ export const returnGoalSheet = async (req: Request, res: Response, next: NextFun
       }
     });
 
-    // Trigger Email to Employee
+    // Trigger Email to Employee and Manager
     if (goalSheet?.user.email) {
-        sendRejectionEmail(goalSheet.user.email, goalSheet.user.name, revisionComment || 'No specific comments provided.').catch(console.error);
+        sendRejectionEmail(goalSheet.user.email, managerEmail || 'manager@atomberg.com', goalSheet.user.name, revisionComment || 'No specific comments provided.').catch(console.error);
     }
 
     res.json(updatedSheet);
@@ -269,7 +277,10 @@ export const getApprovedSubordinates = async (req: Request, res: Response, next:
     }
 
     const sheets = await prisma.goalSheet.findMany({
-      where,
+      where: {
+          ...where,
+          goals: { some: {} }
+      },
       include: {
         user: true,
         goals: {
@@ -311,25 +322,34 @@ export const pushSharedGoal = async (req: Request, res: Response, next: NextFunc
     const { employeeIds, thrustArea, title, description, uom, target, weightage, cycleYear, deadline } = req.body;
     
     for (const empId of employeeIds) {
-      const sheet = await prisma.goalSheet.findFirst({
+      // Find or auto-create a DRAFT sheet for the employee if it doesn't exist/isn't approved
+      let sheet = await prisma.goalSheet.findFirst({
         where: { userId: empId, cycleYear, status: { not: GoalSheetStatus.APPROVED } }
       });
 
-      if (sheet) {
-        await prisma.goal.create({
-          data: {
-            goalSheet: { connect: { id: sheet.id } },
-            thrustArea,
-            title,
-            description,
-            uom,
-            target: target || 0,
-            weightage,
-            isShared: true,
-            deadline: deadline ? new Date(deadline) : null
-          }
-        });
+      if (!sheet) {
+          sheet = await prisma.goalSheet.create({
+              data: {
+                  userId: empId,
+                  cycleYear,
+                  status: GoalSheetStatus.DRAFT
+              }
+          });
       }
+
+      await prisma.goal.create({
+        data: {
+          goalSheet: { connect: { id: sheet.id } },
+          thrustArea,
+          title,
+          description,
+          uom,
+          target: target || 0,
+          weightage,
+          isShared: true,
+          deadline: deadline ? new Date(deadline) : null
+        }
+      });
     }
 
     res.json({ message: 'Shared goal pushed successfully' });
@@ -359,6 +379,9 @@ export const unlockGoalSheet = async (req: Request, res: Response, next: NextFun
 export const getAdminRoster = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sheets = await prisma.goalSheet.findMany({
+      where: {
+          goals: { some: {} }
+      },
       include: {
         user: true,
         goals: {

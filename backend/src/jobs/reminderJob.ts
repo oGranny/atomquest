@@ -10,43 +10,49 @@ const getActiveQuarter = () => {
     return 'Q4'; // Oct to Dec
 };
 
-export const initReminderJob = () => {
-  // Run every morning at 9:00 AM
-  cron.schedule('0 9 * * *', async () => {
-    console.log('Running Quarterly Check-in Reminder Job...');
-    const activeQ = getActiveQuarter();
+export const runReminderJob = async () => {
+  console.log('Running Quarterly Check-in Reminder Job...');
+  const activeQ = getActiveQuarter();
 
-    try {
-      // Find all users who have an approved goal sheet but haven't completed check-ins for the active quarter
-      const usersToRemind = await prisma.user.findMany({
-        where: {
-          role: { in: ['EMPLOYEE', 'MANAGER'] },
-          goalSheets: {
-            some: {
-              status: 'APPROVED',
-              goals: {
-                some: {
-                  checkIns: {
-                    none: {
-                      quarter: activeQ,
-                      status: 'COMPLETED'
-                    }
+  try {
+    // Find all users who have an approved goal sheet but haven't completed check-ins for the active quarter
+    const usersToRemind = await prisma.user.findMany({
+      where: {
+        role: { in: ['EMPLOYEE', 'MANAGER'] },
+        goalSheets: {
+          some: {
+            status: 'APPROVED',
+            goals: {
+              some: {
+                checkIns: {
+                  none: {
+                    quarter: activeQ,
+                    status: 'COMPLETED'
                   }
                 }
               }
             }
           }
         }
-      });
-
-      for (const user of usersToRemind) {
-        console.log(`Sending reminder to ${user.email} for ${activeQ}`);
-        await sendCheckInReminder(user.email, user.name, activeQ);
       }
+    });
 
-      console.log(`Reminder job completed. Sent ${usersToRemind.length} emails.`);
-    } catch (error) {
-      console.error('Reminder job failed:', error);
+    for (const user of usersToRemind) {
+      console.log(`Sending reminder to ${user.email} for ${activeQ}`);
+      await sendCheckInReminder(user.email, user.name, activeQ);
     }
+
+    console.log(`Reminder job completed. Sent ${usersToRemind.length} emails.`);
+    return { count: usersToRemind.length, quarter: activeQ };
+  } catch (error) {
+    console.error('Reminder job failed:', error);
+    throw error;
+  }
+};
+
+export const initReminderJob = () => {
+  // Run every morning at 9:00 AM
+  cron.schedule('0 9 * * *', async () => {
+    await runReminderJob();
   });
 };

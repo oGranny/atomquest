@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
+import { runReminderJob } from '../jobs/reminderJob';
+import { runEscalationJob } from '../jobs/escalationJob';
 
 const getActiveQuarter = () => {
     const month = new Date().getMonth(); // 0-11
@@ -7,6 +9,23 @@ const getActiveQuarter = () => {
     if (month >= 3 && month <= 5) return 'Q2'; // Apr to Jun
     if (month >= 6 && month <= 8) return 'Q3'; // Jul to Sep
     return 'Q4'; // Oct to Dec
+};
+
+export const triggerManualJobs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log('Admin triggered manual job execution...');
+    
+    const reminderResults = await runReminderJob();
+    const escalationResults = await runEscalationJob();
+
+    res.json({
+        message: 'System jobs executed successfully',
+        reminderResults,
+        escalationResults
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getAchievementReport = async (req: Request, res: Response, next: NextFunction) => {
@@ -165,6 +184,21 @@ export const getDepartmentalStats = async (req: Request, res: Response, next: Ne
     });
 
     res.json(stats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getEscalationLogs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const logs = await prisma.escalationLog.findMany({
+      include: {
+        user: true,
+        rule: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(logs);
   } catch (error) {
     next(error);
   }

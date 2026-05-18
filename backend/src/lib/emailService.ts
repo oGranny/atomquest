@@ -1,98 +1,85 @@
 import nodemailer from 'nodemailer';
-import { MailtrapTransport } from 'mailtrap';
 
 const APP_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const ADMIN_EMAIL = process.env.SYSTEM_ADMIN_EMAIL || 'admin@atomberg.com';
 
-// Initialize Transporter
-let transporter: any;
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'sandbox.smtp.mailtrap.io',
+    port: parseInt(process.env.SMTP_PORT || '2525'),
+    auth: {
+        user: process.env.SMTP_USER || '',
+        pass: process.env.SMTP_PASS || ''
+    }
+});
 
-if (process.env.MAILTRAP_TOKEN) {
-    // Official Mailtrap API Method (Production)
-    transporter = nodemailer.createTransport(
-        MailtrapTransport({
-            token: process.env.MAILTRAP_TOKEN,
-        })
-    );
-} else {
-    // Standard SMTP Method (Development/Sandbox)
-    transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'sandbox.smtp.mailtrap.io',
-        port: parseInt(process.env.SMTP_PORT || '2525'),
-        auth: {
-            user: process.env.SMTP_USER || '',
-            pass: process.env.SMTP_PASS || ''
-        }
-    });
-}
+const SENDER = '"AtomQuest Portal" <no-reply@atomberg.com>';
 
-const SENDER = {
-    address: "no-reply@demomailtrap.co", // Mailtrap's demo sender or your verified domain
-    name: "AtomQuest Portal",
-};
-
-export const sendEmail = async (to: string, subject: string, html: string) => {
+export const sendEmail = async (to: string | string[], subject: string, html: string) => {
   try {
+    const recipients = Array.isArray(to) ? to.join(', ') : to;
     await transporter.sendMail({
       from: SENDER,
-      to: [to], // Mailtrap API expects an array or single string
+      to: recipients,
       subject,
-      html,
-      category: "Strategic Objective Update",
+      html
     });
-    console.log(`Email sent to ${to}: ${subject}`);
+    console.log(`Email captured in sandbox for [${recipients}]: ${subject}`);
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('Failed to dispatch email to sandbox:', error);
   }
 };
 
-export const sendSubmissionEmail = async (managerEmail: string, employeeName: string, sheetId: string) => {
+export const sendSubmissionEmail = async (managerEmail: string, employeeEmail: string, employeeName: string) => {
   const subject = `Goal Submission: ${employeeName} has submitted goals for review`;
   const html = `
     <div style="font-family: sans-serif; line-height: 1.5; color: #141b2b;">
       <h2>Strategic Goal Submission</h2>
       <p>Hello,</p>
-      <p><strong>${employeeName}</strong> has submitted their goal sheet for the current cycle for your precision review.</p>
+      <p><strong>${employeeName}</strong> has submitted their goal sheet for the current cycle for precision review.</p>
+      <p style="font-size: 12px; color: #575e70;">This notification has been sent to the Manager, Employee, and System Admin.</p>
       <div style="margin: 30px 0;">
         <a href="${APP_URL}/dashboard/review" style="background: #ffd700; color: #141b2b; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px;">Go to Review Portal</a>
       </div>
       <p>Please log in to the AtomQuest portal to approve or return the sheet for rework.</p>
     </div>
   `;
-  await sendEmail(managerEmail, subject, html);
+  await sendEmail([managerEmail, employeeEmail, ADMIN_EMAIL], subject, html);
 };
 
-export const sendApprovalEmail = async (employeeEmail: string, employeeName: string) => {
-  const subject = `Goal Approved: Your strategic roadmap is locked`;
+export const sendApprovalEmail = async (employeeEmail: string, managerEmail: string, employeeName: string) => {
+  const subject = `Goal Approved: Strategic roadmap locked for ${employeeName}`;
   const html = `
     <div style="font-family: sans-serif; line-height: 1.5; color: #141b2b;">
       <h2>Strategy Approved</h2>
-      <p>Hello ${employeeName},</p>
-      <p>Your goal sheet has been successfully reviewed and <strong>APPROVED</strong> by your manager.</p>
-      <p>Your objectives are now locked for the current cycle. You can now begin logging your quarterly achievements.</p>
+      <p>Hello,</p>
+      <p>The goal sheet for <strong>${employeeName}</strong> has been successfully reviewed and <strong>APPROVED</strong>.</p>
+      <p>The objectives are now locked for the current cycle. Quarterly achievement logging is now active.</p>
+      <p style="font-size: 12px; color: #575e70;">This notification has been sent to the Manager, Employee, and System Admin.</p>
       <div style="margin: 30px 0;">
         <a href="${APP_URL}/dashboard" style="background: #ffd700; color: #141b2b; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px;">View Your Dashboard</a>
       </div>
     </div>
   `;
-  await sendEmail(employeeEmail, subject, html);
+  await sendEmail([employeeEmail, managerEmail, ADMIN_EMAIL], subject, html);
 };
 
-export const sendRejectionEmail = async (employeeEmail: string, employeeName: string, revisionComment: string) => {
-  const subject = `Action Required: Revision needed for your Goal Sheet`;
+export const sendRejectionEmail = async (employeeEmail: string, managerEmail: string, employeeName: string, revisionComment: string) => {
+  const subject = `Action Required: Revision needed for ${employeeName}'s Goal Sheet`;
   const html = `
     <div style="font-family: sans-serif; line-height: 1.5; color: #141b2b;">
       <h2>Revision Required</h2>
-      <p>Hello ${employeeName},</p>
-      <p>Your goal sheet has been returned for rework by your manager with the following feedback:</p>
+      <p>Hello,</p>
+      <p>The goal sheet for <strong>${employeeName}</strong> has been returned for rework with the following feedback:</p>
       <blockquote style="background: #f3f4f6; padding: 15px; border-left: 5px solid #ffd700; margin: 20px 0;">
         ${revisionComment}
       </blockquote>
+      <p style="font-size: 12px; color: #575e70;">This notification has been sent to the Manager, Employee, and System Admin.</p>
       <div style="margin: 30px 0;">
         <a href="${APP_URL}/dashboard/builder" style="background: #ffd700; color: #141b2b; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px;">Update Goals</a>
       </div>
     </div>
   `;
-  await sendEmail(employeeEmail, subject, html);
+  await sendEmail([employeeEmail, managerEmail, ADMIN_EMAIL], subject, html);
 };
 
 export const sendCheckInReminder = async (employeeEmail: string, employeeName: string, quarter: string) => {
@@ -109,4 +96,30 @@ export const sendCheckInReminder = async (employeeEmail: string, employeeName: s
     </div>
   `;
   await sendEmail(employeeEmail, subject, html);
+};
+
+export const sendEscalationEmail = async (
+    targetEmail: string | string[], 
+    subject: string, 
+    employeeName: string, 
+    taskType: string, 
+    delayDays: number,
+    level: string
+) => {
+  const html = `
+    <div style="font-family: sans-serif; line-height: 1.5; color: #141b2b;">
+      <h2 style="color: #ba1a1a;">Escalation Alert: Level ${level}</h2>
+      <p>This is a formal system escalation regarding the strategic objective lifecycle for <strong>${employeeName}</strong>.</p>
+      <div style="background: #fff4f4; padding: 20px; border-radius: 12px; border: 1px solid #ffdad6; margin: 20px 0;">
+        <p style="margin: 0;"><strong>Task Type:</strong> ${taskType}</p>
+        <p style="margin: 5px 0;"><strong>Current Delay:</strong> ${delayDays} Days</p>
+        <p style="margin: 0;"><strong>Escalation Level:</strong> ${level}</p>
+      </div>
+      <p>Immediate action is required to resolve this bottleneck and maintain organizational strategic alignment.</p>
+      <div style="margin: 30px 0;">
+        <a href="${APP_URL}/dashboard" style="background: #141b2b; color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px;">Access Command Center</a>
+      </div>
+    </div>
+  `;
+  await sendEmail(targetEmail, subject, html);
 };

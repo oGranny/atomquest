@@ -28,22 +28,35 @@ const getPublicManagers = async (req, res, next) => {
 exports.getPublicManagers = getPublicManagers;
 const register = async (req, res, next) => {
     try {
-        const { email, password, name, role, managerId } = req.body;
+        const { email, name, managerId } = req.body;
         const existingUser = await prisma_1.default.user.findUnique({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
+        }
+        // Strict Data Normalization for Manager ID
+        let finalManagerId = null;
+        if (managerId && typeof managerId === 'string' && managerId !== "" && managerId !== "null" && managerId !== "undefined") {
+            // Verify manager existence to prevent foreign key violation
+            const managerExists = await prisma_1.default.user.findUnique({ where: { id: managerId } });
+            if (managerExists) {
+                finalManagerId = managerId;
+            }
+            else {
+                console.warn(`Attempted signup with non-existent manager ID: ${managerId}. Defaulting to null.`);
+            }
         }
         const user = await prisma_1.default.user.create({
             data: {
                 email,
                 name,
                 role: 'EMPLOYEE',
-                managerId: managerId && managerId !== "" ? managerId : null,
+                managerId: finalManagerId,
             },
         });
         res.status(201).json({ message: 'User created successfully', user });
     }
     catch (error) {
+        console.error('Registration internal failure:', error);
         next(error);
     }
 };

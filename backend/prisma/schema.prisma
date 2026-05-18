@@ -39,6 +39,7 @@ model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
+  password  String?
   role      Role     @default(EMPLOYEE)
   department String?
   managerId String?
@@ -47,6 +48,44 @@ model User {
 
   goalSheets GoalSheet[]
   auditLogs  AuditLog[]
+  escalationLogs EscalationLog[]
+}
+
+enum EscalationTrigger {
+  SUBMISSION_OVERDUE
+  APPROVAL_OVERDUE
+  CHECKIN_OVERDUE
+}
+
+enum EscalationLevel {
+  EMPLOYEE
+  MANAGER
+  SKIP_LEVEL
+  HR
+}
+
+model EscalationRule {
+  id             String            @id @default(cuid())
+  name           String
+  trigger        EscalationTrigger
+  daysThreshold  Int               // e.g., 7 days
+  level          EscalationLevel
+  isActive       Boolean           @default(true)
+  logs           EscalationLog[]
+}
+
+model EscalationLog {
+  id             String          @id @default(cuid())
+  ruleId         String
+  rule           EscalationRule  @relation(fields: [ruleId], references: [id])
+  entityId       String          // ID of GoalSheet or CheckIn
+  entityType     String          // "GoalSheet" or "CheckIn"
+  currentLevel   EscalationLevel
+  status         String          @default("ACTIVE") // ACTIVE, RESOLVED
+  userId         String          // Target user for the escalation
+  user           User            @relation(fields: [userId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 }
 
 model GoalSheet {
