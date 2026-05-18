@@ -1,0 +1,4 @@
+Employee,Email,Cycle,Goal,Target,Weightage,LatestActual,Status
+Team Manager,manager@atomberg.com,2026,asass,34,100,0,NOT_STARTED
+Employee One,emp1@atomberg.com,2026,aa,12,20,0,NOT_STARTED
+Employee One,emp1@atomberg.com,2026,bb,20,80,0,NOT_STARTED

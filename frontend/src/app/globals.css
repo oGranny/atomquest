@@ -1,0 +1,224 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #f8f9fb;
+  --foreground: #191c1e;
+  --card: #ffffff;
+  --card-foreground: #191c1e;
+  --popover: #ffffff;
+  --popover-foreground: #191c1e;
+  
+  --primary: #ffd700;
+  --primary-foreground: #141b2b;
+  
+  --secondary: #141b2b;
+  --secondary-foreground: #ffffff;
+  --muted: #f3f4f6;
+  --muted-foreground: #575e70;
+  --accent: #ffd700;
+  --accent-foreground: #141b2b;
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+  --border: #e1e2e4;
+  --input: #f3f4f6;
+  --ring: #ffd700;
+  --radius: 0.75rem;
+  
+  /* Industrial Color Tokens */
+  --primary-container: #ffd700;
+  --on-primary-container: #141b2b;
+  --secondary-container: #d9dff5;
+  --tertiary: #585f6c;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #d3daea;
+  
+  --surface: #f8f9fb;
+  --surface-dim: #d9dadc;
+  --surface-bright: #f8f9fb;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f3f4f6;
+  --surface-container: #edeef0;
+  --surface-container-high: #e7e8ea;
+  --surface-container-highest: #e1e2e4;
+  --on-surface: #191c1e;
+  --surface-variant: #e1e2e4;
+  --on-surface-variant: #4d4732;
+  --inverse-surface: #2e3132;
+  --inverse-on-surface: #f0f1f3;
+  --surface-tint: #ffd700;
+
+  --outline: #7e775f;
+  --outline-variant: #d0c6ab;
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+
+  --shadow-level-1: 0px 4px 20px rgba(17, 24, 39, 0.05);
+  --shadow-level-2: 0px 10px 30px rgba(17, 24, 39, 0.08);
+  --shadow-level-3: 0px 20px 50px rgba(17, 24, 39, 0.12);
+}
+
+.dark {
+  --background: #141b2b;
+  --foreground: #f0f1f3;
+  --card: #1c2438;
+  --card-foreground: #f0f1f3;
+  --popover: #1c2438;
+  --popover-foreground: #f0f1f3;
+  
+  --primary: #ffd700;
+  --primary-foreground: #141b2b;
+  
+  --secondary: #2e3546;
+  --secondary-foreground: #ffffff;
+  --muted: #2e3546;
+  --muted-foreground: #8a93a6;
+  --accent: #ffd700;
+  --accent-foreground: #141b2b;
+  --destructive: #ff5449;
+  --destructive-foreground: #ffffff;
+  --border: #3e4759;
+  --input: #2e3546;
+  --ring: #ffd700;
+  
+  /* Industrial Color Tokens - Dark Mode */
+  --primary-container: #473e00;
+  --on-primary-container: #ffe133;
+  --secondary-container: #3e4759;
+  --tertiary: #b0b8c9;
+  --on-tertiary: #1a2232;
+  --tertiary-container: #303848;
+  
+  --surface: #141b2b;
+  --surface-dim: #0a0e17;
+  --surface-bright: #1c2438;
+  --surface-container-lowest: #05070c;
+  --surface-container-low: #1c2438;
+  --surface-container: #222a3f;
+  --surface-container-high: #293247;
+  --surface-container-highest: #31394f;
+  --on-surface: #f0f1f3;
+  --surface-variant: #3e4759;
+  --on-surface-variant: #b0b5c1;
+  --inverse-surface: #f0f1f3;
+  --inverse-on-surface: #141b2b;
+  --surface-tint: #ffd700;
+
+  --outline: #8a93a6;
+  --outline-variant: #3e4759;
+  --error: #ff5449;
+  --error-container: #93000a;
+
+  --shadow-level-1: 0px 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-level-2: 0px 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-level-3: 0px 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-secondary-container: var(--secondary-container);
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-on-surface: var(--on-surface);
+  --color-surface-variant: var(--surface-variant);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-surface-tint: var(--surface-tint);
+
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+
+  --font-sans: "Inter", sans-serif;
+  --font-headline: "Montserrat", sans-serif;
+  --font-heading: "Montserrat", sans-serif;
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  --shadow-level-1: var(--shadow-level-1);
+  --shadow-level-2: var(--shadow-level-2);
+  --shadow-level-3: var(--shadow-level-3);
+}
+
+@layer base {
+  * {
+    @apply border-outline-variant outline-primary/50;
+  }
+  body {
+    @apply bg-background text-on-surface font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+@layer utilities {
+  .glass-badge {
+    @apply backdrop-blur-sm bg-card/60;
+  }
+  
+  .glass-status {
+    @apply backdrop-blur-md bg-card/40 border border-outline-variant/20;
+  }
+
+  .circular-progress {
+    background: radial-gradient(closest-side, var(--card) 79%, transparent 80% 100%),
+                conic-gradient(var(--primary) var(--progress), var(--surface-container) 0);
+  }
+
+  .sparkline {
+    @apply flex items-end gap-[2px] h-8;
+  }
+
+  .spark-bar {
+    @apply w-1 rounded-[1px];
+  }
+
+  .blueprint-grid {
+    background-image: 
+      linear-gradient(to right, var(--outline-variant) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--outline-variant) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.2;
+  }
+}

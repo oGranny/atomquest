@@ -1,1 +1,3 @@
 frontend/.git/
+.vercel
+.env*.local
