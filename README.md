@@ -1,6 +1,6 @@
-# AtomQuest - Enterprise Goal Tracking Portal
+# ZenQ - Goal Tracking Portal
 
-**AtomQuest** is a high-density, rule-based Goal Setting & Tracking Portal engineered for precision and accountability. Built as a monorepo, it transitions organizational strategy from passive spreadsheets into an active "Command Center" featuring real-time telemetry, automated escalations, and strict role-based governance.
+**ZenQ** is a rule-based Goal Setting & Tracking Portal engineered for precision and accountability. Built as a monorepo, it transitions organizational strategy from passive spreadsheets into an active "Command Center" featuring real-time updates, automated escalations, and strict role-based governance.
 
 
 ---
@@ -134,7 +134,7 @@ npm run dev
 
 ---
 
-## 🔑 Default Provisioned Accounts
+## Default Provisioned Accounts
 If you ran the seed script, you can immediately log in with:
 *   **Admin Access:** `admin@atomberg.com` (Password: `password123`)
 *   **Manager Access:** `manager@atomberg.com` (Password: `password123`)

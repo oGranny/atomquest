@@ -50,11 +50,11 @@ export default function LoginPage() {
             </div>
             <div>
               <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
-                AtomQuest <span className="text-primary">1.0</span>
+                ZenQ <span className="text-primary">1.0</span>
               </h1>
               <div className="flex items-center justify-center gap-3 mt-2">
                 <div className="h-[1px] w-8 bg-outline-variant"></div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-on-surface-variant">Industrial Portal</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-on-surface-variant">Goal setting and tracking Portal</p>
                 <div className="h-[1px] w-8 bg-outline-variant"></div>
               </div>
             </div>

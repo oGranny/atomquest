@@ -158,7 +158,7 @@ export default function SettingsPage() {
                             </div>
                             <div>
                                 <Label className="font-headline text-lg font-black text-on-surface">Developer Mode</Label>
-                                <p className="font-sans text-[10px] text-on-surface-variant opacity-60 mt-0.5">Unlock advanced diagnostic telemetry.</p>
+                                <p className="font-sans text-[10px] text-on-surface-variant opacity-60 mt-0.5">Unlock advanced diagnostics.</p>
                             </div>
                         </div>
                         <Button 

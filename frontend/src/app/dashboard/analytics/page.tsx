@@ -68,7 +68,7 @@ export default function AnalyticsPage() {
                 <h1 className="font-headline text-5xl font-black text-on-surface uppercase tracking-tighter leading-none">Organizational Insights</h1>
               </div>
               <Button onClick={loadAnalytics} variant="outline" className="h-12 border-outline-variant bg-card text-on-surface font-bold uppercase text-[10px] tracking-widest px-6 rounded-xl hover:bg-surface-container-low transition-all">
-                  <RefreshCwIcon className="h-4 w-4 mr-2" /> Refresh Telemetry
+                  <RefreshCwIcon className="h-4 w-4 mr-2" /> Refresh
               </Button>
           </header>
 
