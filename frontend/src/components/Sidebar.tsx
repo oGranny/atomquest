@@ -54,7 +54,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         </div>
         {!isCollapsed && (
             <div className="animate-in fade-in duration-500 overflow-hidden">
-                <h1 className="font-headline text-2xl font-black text-on-surface leading-none tracking-tighter uppercase whitespace-nowrap">AtomQuest</h1>
+                <h1 className="font-headline text-2xl font-black text-on-surface leading-none tracking-tighter uppercase whitespace-nowrap">ZenQ</h1>
                 <p className="font-sans text-[8px] font-black text-on-surface-variant uppercase tracking-[0.4em] opacity-40 mt-2 whitespace-nowrap">Precision Portal</p>
             </div>
         )}

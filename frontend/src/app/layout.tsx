@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AtomQuest 1.0 - Goal Tracking Portal",
-  description: "Atomberg In-House Goal Setting & Tracking Portal",
+  title: "ZenQ - Goal Tracking Portal",
+  description: "ZenQ Goal Setting & Tracking Portal",
 };
 
 export default function RootLayout({

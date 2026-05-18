@@ -64,7 +64,7 @@ export default function LoginPage() {
             <CardHeader className="space-y-1 pb-6 pt-8 text-center">
                 <CardTitle className="font-headline text-2xl font-bold text-on-surface">Login</CardTitle>
                 <CardDescription className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant/70">
-                    Secure engineering access required
+                   Access required
                 </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
