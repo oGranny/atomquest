@@ -134,6 +134,14 @@ npm run dev
 
 ---
 
+## Email Notifications (Mailtrap Sandbox)
+
+All automated emails triggered by the system (such as goal submissions, approvals, rejections, and quarterly check-in reminders) are routed securely to a **Mailtrap Sandbox** environment instead of actual inboxes. This ensures that no real emails are sent or spammed during testing.
+
+![Mailtrap Sandbox Dashboard](images/image.png)
+
+---
+
 ## Default Provisioned Accounts
 If you ran the seed script, you can immediately log in with:
 *   **Admin Access:** `admin@atomberg.com` (Password: `password123`)
