@@ -314,9 +314,12 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
   const canEdit = sheet.status === 'DRAFT' || sheet.status === 'RETURNED';
   const slots = Array.from({ length: 8 }, (_, i) => sheet.goals[i] || null);
 
+  const isShared = sheet?.goals.find((g: any) => g.id === selectedGoalId)?.isShared || false;
+  const isEmployee = user?.role === 'EMPLOYEE';
+  const isSharedLocked = isShared && isEmployee;
+
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
-      <Header title="Goal Builder" />
+      <div className="flex flex-col h-screen overflow-hidden bg-background">      <Header title="Goal Builder" />
       
       <div className="flex-1 flex overflow-hidden bg-surface-container-low/50 relative">
         <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-[0.03]"></div>
@@ -420,7 +423,7 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                         {canEdit && (
                             <>
                                 {selectedGoalId ? (
-                                    <Button variant="ghost" className="text-error font-bold uppercase text-[10px] tracking-widest hover:bg-error-container/20 px-6" onClick={() => deleteGoal(selectedGoalId)}>
+                                    <Button variant="ghost" className="text-error font-bold uppercase text-[10px] tracking-widest hover:bg-error-container/20 px-6" onClick={() => deleteGoal(selectedGoalId)} disabled={isSharedLocked}>
                                         <Trash2Icon className="h-4 w-4 mr-2" /> Clear Slot
                                     </Button>
                                 ) : (
@@ -454,9 +457,9 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                     <div className="space-y-3">
                         <Label className="font-sans text-[10px] font-black text-on-surface-variant uppercase tracking-widest ml-1 opacity-60">Goal Specification</Label>
                         <Input 
-                            disabled={!canEdit}
+                            disabled={!canEdit || isSharedLocked}
                             placeholder="e.g., Optimize Motor Thermal Efficiency"
-                            className="bg-card border-outline-variant/40 rounded-xl h-14 px-6 focus:ring-4 focus:ring-primary/10 transition-all font-bold text-on-surface" 
+                            className="bg-card border-outline-variant/40 rounded-xl h-14 px-6 focus:ring-4 focus:ring-primary/10 transition-all font-bold text-on-surface disabled:opacity-50" 
                             value={formData.title}
                             onChange={e => setFormData({...formData, title: e.target.value})}
                         />
@@ -464,9 +467,9 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                     <div className="space-y-3">
                         <Label className="font-sans text-[10px] font-black text-on-surface-variant uppercase tracking-widest ml-1 opacity-60">Thrust Focus Area</Label>
                         <Input 
-                             disabled={!canEdit}
+                             disabled={!canEdit || isSharedLocked}
                              placeholder="e.g., R&D Innovation"
-                             className="bg-card border-outline-variant/40 rounded-xl h-14 px-6 focus:ring-4 focus:ring-primary/10 transition-all font-bold text-on-surface" 
+                             className="bg-card border-outline-variant/40 rounded-xl h-14 px-6 focus:ring-4 focus:ring-primary/10 transition-all font-bold text-on-surface disabled:opacity-50" 
                              value={formData.thrustArea}
                              onChange={e => setFormData({...formData, thrustArea: e.target.value})}
                         />
@@ -474,9 +477,9 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                     <div className="space-y-3 col-span-2">
                         <Label className="font-sans text-[10px] font-black text-on-surface-variant uppercase tracking-widest ml-1 opacity-60">Technical Description & Strategic Impact</Label>
                         <Textarea 
-                            disabled={!canEdit}
+                            disabled={!canEdit || isSharedLocked}
                             placeholder="Define the scope, methodology, and intended impact of this objective..."
-                            className="bg-card border-outline-variant/40 rounded-xl p-6 focus:ring-4 focus:ring-primary/10 transition-all min-h-[140px] font-medium text-on-surface leading-relaxed shadow-sm" 
+                            className="bg-card border-outline-variant/40 rounded-xl p-6 focus:ring-4 focus:ring-primary/10 transition-all min-h-[140px] font-medium text-on-surface leading-relaxed shadow-sm disabled:opacity-50" 
                             value={formData.description}
                             onChange={e => setFormData({...formData, description: e.target.value})}
                         />
@@ -535,7 +538,7 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                                     <ScaleIcon className="h-6 w-6 text-primary" /> Target Specification
                                 </h3>
                                 {(formData.uom === 'NUMERIC' || formData.uom === 'PERCENTAGE') && (
-                                    <Select value={formData.direction} onValueChange={val => val && setFormData({...formData, direction: val})} disabled={!canEdit}>
+                                    <Select value={formData.direction} onValueChange={val => val && setFormData({...formData, direction: val})} disabled={!canEdit || isSharedLocked}>
                                         <SelectTrigger className="w-40 bg-surface-container-low border-none rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest shadow-sm">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -556,9 +559,9 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                                     {formData.uom === 'TIMELINE' ? (
                                         <div className="space-y-2 w-full text-center">
                                             <Input 
-                                                disabled={!canEdit}
+                                                disabled={!canEdit || isSharedLocked}
                                                 type="date"
-                                                className="font-headline text-3xl font-black text-on-surface border-none bg-surface-container-low rounded-xl h-16 text-center focus:ring-4 focus:ring-primary/10 tracking-tight" 
+                                                className="font-headline text-3xl font-black text-on-surface border-none bg-surface-container-low rounded-xl h-16 text-center focus:ring-4 focus:ring-primary/10 tracking-tight disabled:opacity-50" 
                                                 value={formData.deadline}
                                                 onChange={e => setFormData({...formData, deadline: e.target.value})}
                                             />
@@ -566,7 +569,7 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                                         </div>
                                     ) : formData.uom === 'ZERO_BASED' ? (
                                         <div className="text-center space-y-4">
-                                            <Select value={formData.target || '0'} onValueChange={val => val && setFormData({...formData, target: val})} disabled={!canEdit}>
+                                            <Select value={formData.target || '0'} onValueChange={val => val && setFormData({...formData, target: val})} disabled={!canEdit || isSharedLocked}>
                                                 <SelectTrigger className="w-48 bg-surface-container-low border-none rounded-xl font-headline text-3xl font-black h-20 px-6 shadow-sm mx-auto">
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -580,10 +583,10 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                                     ) : (
                                         <>
                                             <Input 
-                                                disabled={!canEdit}
+                                                disabled={!canEdit || isSharedLocked}
                                                 type="number"
                                                 placeholder="0"
-                                                className="font-headline text-6xl font-black text-on-surface border-none bg-transparent p-0 text-center focus:ring-0 w-32 tracking-tighter" 
+                                                className="font-headline text-6xl font-black text-on-surface border-none bg-transparent p-0 text-center focus:ring-0 w-32 tracking-tighter disabled:opacity-50" 
                                                 value={formData.target}
                                                 onChange={e => setFormData({...formData, target: e.target.value})}
                                             />
@@ -591,7 +594,7 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                                         </>
                                     )}
                                 </div>
-                                <Select value={formData.uom} onValueChange={val => val && setFormData({...formData, uom: val})} disabled={!canEdit}>
+                                <Select value={formData.uom} onValueChange={val => val && setFormData({...formData, uom: val})} disabled={!canEdit || isSharedLocked}>
                                     <SelectTrigger className="w-48 bg-surface-container-low border-none rounded-xl font-bold text-sm h-14 px-6 shadow-sm mx-auto">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -737,30 +740,6 @@ export default function GoalSheetDetailPage({ params }: { params: Promise<{ id: 
                     </Card>
                 )}
 
-                {/* Historical Context Card */}
-                {/* <div className="bg-[#2e3132] text-white p-10 rounded-3xl relative overflow-hidden shadow-2xl border-b-0">
-                    <div className="relative z-10 h-full flex flex-col justify-between">
-                        <h4 className="font-headline text-3xl font-bold tracking-tight text-white mb-6">Historical Context</h4>
-                        
-                        <p className="font-sans text-lg font-medium opacity-90 max-w-[700px] leading-relaxed mb-10">
-                            Last cycle, your performance in this area showed a 12% improvement. 
-                            {formData.uom === 'TIMELINE' 
-                                ? `Meeting the deadline of ${formData.deadline || 'unspecified date'} maintains the strategic roadmap.`
-                                : formData.uom === 'ZERO_BASED'
-                                ? `Meeting the binary benchmark remains the non-negotiable benchmark for this objective.`
-                                : `Aiming for ${formData.target || 'N/A'} ${formData.uom} maintains this trajectory.`
-                            }
-                        </p>
-                        
-                        <div className="flex gap-4">
-                            <span className="glass-badge bg-card/20 px-6 py-2 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white">HIGH PRECISION</span>
-                            <span className="glass-badge bg-card/20 px-6 py-2 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white">INDUSTRIAL STANDARD</span>
-                        </div>
-                    </div>
-                    <div className="absolute right-[-40px] top-1/2 -translate-y-1/2 opacity-[0.05] pointer-events-none">
-                        <TimerIcon className="h-96 w-96 text-white" />
-                    </div>
-                </div> */}
             </div>
         </section>
       </div>
