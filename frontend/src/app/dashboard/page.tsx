@@ -104,9 +104,9 @@ export default function DashboardPage() {
                 </p>
               </div>
               <div className="flex items-end gap-6 mt-12 z-10">
-                <Button className="bg-primary text-primary-foreground font-black px-10 h-14 shadow-lg hover:brightness-105 active:scale-[0.98] transition-all rounded-xl uppercase text-[10px] tracking-widest">
+                {/* <Button className="bg-primary text-primary-foreground font-black px-10 h-14 shadow-lg hover:brightness-105 active:scale-[0.98] transition-all rounded-xl uppercase text-[10px] tracking-widest">
                   <DownloadIcon className="h-4 w-4 mr-3" /> Generate Audit Report
-                </Button>
+                </Button> */}
                 <Button variant="outline" className="border-outline-variant bg-card text-on-surface font-bold h-14 px-8 hover:bg-surface-container-low rounded-xl uppercase text-[10px] tracking-widest" onClick={() => router.push('/dashboard/builder')}>
                   Strategy Builder
                 </Button>

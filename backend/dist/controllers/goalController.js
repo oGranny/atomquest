@@ -15,7 +15,10 @@ const createGoalSheet = async (req, res, next) => {
         const existingSheet = await prisma_1.default.goalSheet.findFirst({
             where: { userId, cycleYear, status: { not: client_1.GoalSheetStatus.RETURNED } }
         });
-        if (existingSheet && existingSheet.status !== client_1.GoalSheetStatus.DRAFT) {
+        if (existingSheet) {
+            if (existingSheet.status === client_1.GoalSheetStatus.DRAFT) {
+                return res.json(existingSheet);
+            }
             return res.status(400).json({ message: 'Active goal sheet already exists for this cycle' });
         }
         const goalSheet = await prisma_1.default.goalSheet.create({
@@ -98,9 +101,9 @@ const submitGoalSheet = async (req, res, next) => {
             where: { id },
             data: { status: client_1.GoalSheetStatus.SUBMITTED }
         });
-        // Trigger Email to Manager
+        // Trigger Email to Manager and Employee
         if (goalSheet.user.manager?.email) {
-            (0, emailService_1.sendSubmissionEmail)(goalSheet.user.manager.email, goalSheet.user.name, id).catch(console.error);
+            (0, emailService_1.sendSubmissionEmail)(goalSheet.user.manager.email, goalSheet.user.email, goalSheet.user.name).catch(console.error);
         }
         res.json(updatedSheet);
     }
@@ -177,7 +180,10 @@ const getPendingApprovals = async (req, res, next) => {
             where.user = { managerId: user.userId };
         }
         const pendingSheets = await prisma_1.default.goalSheet.findMany({
-            where,
+            where: {
+                ...where,
+                goals: { some: {} }
+            },
             include: {
                 user: true,
                 goals: {
@@ -196,6 +202,7 @@ exports.getPendingApprovals = getPendingApprovals;
 const approveGoalSheet = async (req, res, next) => {
     try {
         const id = req.params.id;
+        const managerEmail = req.user.email;
         const userId = req.user.userId;
         const goalSheet = await prisma_1.default.goalSheet.findUnique({
             where: { id },
@@ -206,9 +213,9 @@ const approveGoalSheet = async (req, res, next) => {
             data: { status: client_1.GoalSheetStatus.APPROVED }
         });
         await (0, audit_1.logAudit)(userId, 'APPROVE', id, 'GoalSheet', 'Manager/Admin approved goal sheet');
-        // Trigger Email to Employee
+        // Trigger Email to Employee and Manager
         if (goalSheet?.user.email) {
-            (0, emailService_1.sendApprovalEmail)(goalSheet.user.email, goalSheet.user.name).catch(console.error);
+            (0, emailService_1.sendApprovalEmail)(goalSheet.user.email, managerEmail || 'manager@atomberg.com', goalSheet.user.name).catch(console.error);
         }
         res.json(updatedSheet);
     }
@@ -220,6 +227,7 @@ exports.approveGoalSheet = approveGoalSheet;
 const returnGoalSheet = async (req, res, next) => {
     try {
         const id = req.params.id;
+        const managerEmail = req.user.email;
         const { revisionComment } = req.body;
         const goalSheet = await prisma_1.default.goalSheet.findUnique({
             where: { id },
@@ -232,9 +240,9 @@ const returnGoalSheet = async (req, res, next) => {
                 revisionComment: revisionComment || null
             }
         });
-        // Trigger Email to Employee
+        // Trigger Email to Employee and Manager
         if (goalSheet?.user.email) {
-            (0, emailService_1.sendRejectionEmail)(goalSheet.user.email, goalSheet.user.name, revisionComment || 'No specific comments provided.').catch(console.error);
+            (0, emailService_1.sendRejectionEmail)(goalSheet.user.email, managerEmail || 'manager@atomberg.com', goalSheet.user.name, revisionComment || 'No specific comments provided.').catch(console.error);
         }
         res.json(updatedSheet);
     }
@@ -251,7 +259,10 @@ const getApprovedSubordinates = async (req, res, next) => {
             where.user = { managerId: user.userId };
         }
         const sheets = await prisma_1.default.goalSheet.findMany({
-            where,
+            where: {
+                ...where,
+                goals: { some: {} }
+            },
             include: {
                 user: true,
                 goals: {
@@ -291,25 +302,62 @@ exports.getSubordinates = getSubordinates;
 const pushSharedGoal = async (req, res, next) => {
     try {
         const { employeeIds, thrustArea, title, description, uom, target, weightage, cycleYear, deadline } = req.body;
+        const managerId = req.user.userId;
+        // 1. Find or create the Manager's own sheet to hold the Master Goal
+        let managerSheet = await prisma_1.default.goalSheet.findFirst({
+            where: { userId: managerId, cycleYear }
+        });
+        if (!managerSheet) {
+            managerSheet = await prisma_1.default.goalSheet.create({
+                data: {
+                    userId: managerId,
+                    cycleYear,
+                    status: client_1.GoalSheetStatus.DRAFT
+                }
+            });
+        }
+        // 2. Create the Master Shared Goal on the Manager's sheet
+        const masterGoal = await prisma_1.default.goal.create({
+            data: {
+                goalSheet: { connect: { id: managerSheet.id } },
+                thrustArea,
+                title,
+                description,
+                uom,
+                target: target || 0,
+                weightage: 10, // Base weightage for the master
+                isShared: true,
+                deadline: deadline ? new Date(deadline) : null
+            }
+        });
         for (const empId of employeeIds) {
-            const sheet = await prisma_1.default.goalSheet.findFirst({
+            // Find or auto-create a DRAFT sheet for the employee if it doesn't exist/isn't approved
+            let sheet = await prisma_1.default.goalSheet.findFirst({
                 where: { userId: empId, cycleYear, status: { not: client_1.GoalSheetStatus.APPROVED } }
             });
-            if (sheet) {
-                await prisma_1.default.goal.create({
+            if (!sheet) {
+                sheet = await prisma_1.default.goalSheet.create({
                     data: {
-                        goalSheet: { connect: { id: sheet.id } },
-                        thrustArea,
-                        title,
-                        description,
-                        uom,
-                        target: target || 0,
-                        weightage,
-                        isShared: true,
-                        deadline: deadline ? new Date(deadline) : null
+                        userId: empId,
+                        cycleYear,
+                        status: client_1.GoalSheetStatus.DRAFT
                     }
                 });
             }
+            await prisma_1.default.goal.create({
+                data: {
+                    goalSheet: { connect: { id: sheet.id } },
+                    thrustArea,
+                    title,
+                    description,
+                    uom,
+                    target: target || 0,
+                    weightage,
+                    isShared: true,
+                    parentGoal: { connect: { id: masterGoal.id } }, // LINK TO PARENT MASTER GOAL
+                    deadline: deadline ? new Date(deadline) : null
+                }
+            });
         }
         res.json({ message: 'Shared goal pushed successfully' });
     }
@@ -337,6 +385,9 @@ exports.unlockGoalSheet = unlockGoalSheet;
 const getAdminRoster = async (req, res, next) => {
     try {
         const sheets = await prisma_1.default.goalSheet.findMany({
+            where: {
+                goals: { some: {} }
+            },
             include: {
                 user: true,
                 goals: {
@@ -364,11 +415,17 @@ const updateGoal = async (req, res, next) => {
         if (!goal)
             return res.status(404).json({ message: 'Goal not found' });
         const userRole = req.user.role;
-        if (userRole === 'MANAGER' && goal.goalSheet.status !== client_1.GoalSheetStatus.SUBMITTED) {
-            return res.status(400).json({ message: 'Can only edit submitted goals' });
-        }
-        if (userRole === 'EMPLOYEE' && goal.goalSheet.status !== client_1.GoalSheetStatus.DRAFT && goal.goalSheet.status !== client_1.GoalSheetStatus.RETURNED) {
-            return res.status(400).json({ message: 'Cannot edit goals in current status' });
+        const isOwnSheet = goal.goalSheet.userId === req.user.userId;
+        // Security rules:
+        // If not admin, and it's their own sheet, it must be DRAFT or RETURNED
+        // If it's a manager editing someone else's sheet, it must be SUBMITTED
+        if (userRole !== 'ADMIN') {
+            if (isOwnSheet && goal.goalSheet.status !== client_1.GoalSheetStatus.DRAFT && goal.goalSheet.status !== client_1.GoalSheetStatus.RETURNED) {
+                return res.status(400).json({ message: 'Cannot edit goals in current status' });
+            }
+            else if (!isOwnSheet && goal.goalSheet.status !== client_1.GoalSheetStatus.SUBMITTED) {
+                return res.status(400).json({ message: 'Can only edit submitted goals' });
+            }
         }
         const updatedGoal = await prisma_1.default.goal.update({
             where: { id },
@@ -383,6 +440,22 @@ const updateGoal = async (req, res, next) => {
                 deadline: deadline ? new Date(deadline) : (deadline === null ? null : goal.deadline)
             }
         });
+        // CASCADE UPDATE TO CHILDREN if this goal is a master shared goal
+        if (goal.isShared && !goal.parentGoalId) {
+            await prisma_1.default.goal.updateMany({
+                where: { parentGoalId: id },
+                data: {
+                    thrustArea,
+                    title,
+                    description,
+                    uom,
+                    direction: direction || goal.direction,
+                    target: target || 0,
+                    // Weightage is intentionally NOT updated, children manage their own weightage
+                    deadline: deadline ? new Date(deadline) : (deadline === null ? null : goal.deadline)
+                }
+            });
+        }
         if (goal.goalSheet.status === client_1.GoalSheetStatus.APPROVED) {
             const userId = req.user.userId;
             await (0, audit_1.logAudit)(userId, 'UPDATE_AFTER_LOCK', id, 'Goal', `Updated goal after approval: ${title}`);

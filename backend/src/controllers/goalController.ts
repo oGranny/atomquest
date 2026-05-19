@@ -320,11 +320,42 @@ export const getSubordinates = async (req: Request, res: Response, next: NextFun
 export const pushSharedGoal = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { employeeIds, thrustArea, title, description, uom, target, weightage, cycleYear, deadline } = req.body;
+    const managerId = (req as any).user.userId;
     
+    // 1. Find or create the Manager's own sheet to hold the Master Goal
+    let managerSheet = await prisma.goalSheet.findFirst({
+      where: { userId: managerId, cycleYear }
+    });
+
+    if (!managerSheet) {
+        managerSheet = await prisma.goalSheet.create({
+            data: {
+                userId: managerId,
+                cycleYear,
+                status: GoalSheetStatus.DRAFT
+            }
+        });
+    }
+
+    // 2. Create the Master Shared Goal on the Manager's sheet
+    const masterGoal = await prisma.goal.create({
+      data: {
+        goalSheet: { connect: { id: managerSheet.id } },
+        thrustArea,
+        title,
+        description,
+        uom,
+        target: target || 0,
+        weightage: 10, // Base weightage for the master
+        isShared: true,
+        deadline: deadline ? new Date(deadline) : null
+      }
+    });
+
     for (const empId of employeeIds) {
-      // Find or auto-create a DRAFT sheet for the employee if it doesn't exist/isn't approved
+      // Find any sheet for the employee in this cycle
       let sheet = await prisma.goalSheet.findFirst({
-        where: { userId: empId, cycleYear, status: { not: GoalSheetStatus.APPROVED } }
+        where: { userId: empId, cycleYear }
       });
 
       if (!sheet) {
@@ -335,6 +366,13 @@ export const pushSharedGoal = async (req: Request, res: Response, next: NextFunc
                   status: GoalSheetStatus.DRAFT
               }
           });
+      } else if (sheet.status === GoalSheetStatus.APPROVED || sheet.status === GoalSheetStatus.SUBMITTED) {
+          sheet = await prisma.goalSheet.update({
+              where: { id: sheet.id },
+              data: { status: GoalSheetStatus.DRAFT }
+          });
+          const userId = (req as any).user.userId;
+          await logAudit(userId, 'UNLOCK', sheet.id, 'GoalSheet', 'Admin/Manager unlocked goal sheet to push shared goal');
       }
 
       await prisma.goal.create({
@@ -347,6 +385,7 @@ export const pushSharedGoal = async (req: Request, res: Response, next: NextFunc
           target: target || 0,
           weightage,
           isShared: true,
+          parentGoal: { connect: { id: masterGoal.id } }, // LINK TO PARENT MASTER GOAL
           deadline: deadline ? new Date(deadline) : null
         }
       });
@@ -410,11 +449,17 @@ export const updateGoal = async (req: Request, res: Response, next: NextFunction
     if (!goal) return res.status(404).json({ message: 'Goal not found' });
     
     const userRole = (req as any).user.role;
-    if (userRole === 'MANAGER' && goal.goalSheet.status !== GoalSheetStatus.SUBMITTED) {
-      return res.status(400).json({ message: 'Can only edit submitted goals' });
-    }
-    if (userRole === 'EMPLOYEE' && goal.goalSheet.status !== GoalSheetStatus.DRAFT && goal.goalSheet.status !== GoalSheetStatus.RETURNED) {
-      return res.status(400).json({ message: 'Cannot edit goals in current status' });
+    const isOwnSheet = goal.goalSheet.userId === (req as any).user.userId;
+    
+    // Security rules:
+    // If not admin, and it's their own sheet, it must be DRAFT or RETURNED
+    // If it's a manager editing someone else's sheet, it must be SUBMITTED
+    if (userRole !== 'ADMIN') {
+        if (isOwnSheet && goal.goalSheet.status !== GoalSheetStatus.DRAFT && goal.goalSheet.status !== GoalSheetStatus.RETURNED) {
+             return res.status(400).json({ message: 'Cannot edit goals in current status' });
+        } else if (!isOwnSheet && goal.goalSheet.status !== GoalSheetStatus.SUBMITTED) {
+             return res.status(400).json({ message: 'Can only edit submitted goals' });
+        }
     }
 
     const updatedGoal = await prisma.goal.update({
@@ -430,6 +475,23 @@ export const updateGoal = async (req: Request, res: Response, next: NextFunction
         deadline: deadline ? new Date(deadline) : (deadline === null ? null : goal.deadline)
       }
     });
+
+    // CASCADE UPDATE TO CHILDREN if this goal is a master shared goal
+    if (goal.isShared && !goal.parentGoalId) {
+        await prisma.goal.updateMany({
+            where: { parentGoalId: id },
+            data: {
+                thrustArea, 
+                title, 
+                description, 
+                uom, 
+                direction: direction || goal.direction,
+                target: target || 0, 
+                // Weightage is intentionally NOT updated, children manage their own weightage
+                deadline: deadline ? new Date(deadline) : (deadline === null ? null : goal.deadline)
+            }
+        });
+    }
 
     if (goal.goalSheet.status === GoalSheetStatus.APPROVED) {
         const userId = (req as any).user.userId;

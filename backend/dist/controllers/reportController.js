@@ -3,8 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDepartmentalStats = exports.getAuditTrail = exports.getCompletionStats = exports.getAchievementReport = void 0;
+exports.getEscalationLogs = exports.getDepartmentalStats = exports.getAuditTrail = exports.getCompletionStats = exports.getAchievementReport = exports.triggerManualJobs = void 0;
 const prisma_1 = __importDefault(require("../lib/prisma"));
+const reminderJob_1 = require("../jobs/reminderJob");
+const escalationJob_1 = require("../jobs/escalationJob");
 const getActiveQuarter = () => {
     const month = new Date().getMonth(); // 0-11
     if (month >= 0 && month <= 2)
@@ -15,6 +17,22 @@ const getActiveQuarter = () => {
         return 'Q3'; // Jul to Sep
     return 'Q4'; // Oct to Dec
 };
+const triggerManualJobs = async (req, res, next) => {
+    try {
+        console.log('Admin triggered manual job execution...');
+        const reminderResults = await (0, reminderJob_1.runReminderJob)();
+        const escalationResults = await (0, escalationJob_1.runEscalationJob)();
+        res.json({
+            message: 'System jobs executed successfully',
+            reminderResults,
+            escalationResults
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.triggerManualJobs = triggerManualJobs;
 const getAchievementReport = async (req, res, next) => {
     try {
         const data = await prisma_1.default.user.findMany({
@@ -164,6 +182,22 @@ const getDepartmentalStats = async (req, res, next) => {
     }
 };
 exports.getDepartmentalStats = getDepartmentalStats;
+const getEscalationLogs = async (req, res, next) => {
+    try {
+        const logs = await prisma_1.default.escalationLog.findMany({
+            include: {
+                user: true,
+                rule: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(logs);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getEscalationLogs = getEscalationLogs;
 const calculateInternalScore = (goal, checkIn) => {
     const actual = checkIn.actualAchievement ?? 0;
     const target = goal.target;
